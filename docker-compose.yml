@@ -1,0 +1,12 @@
+services:
+  ide:
+    build: .
+    image: c9sdk
+    container_name: c9sdk
+    env_file:
+       - .env
+    ports:
+      - 8001:8080
+    volumes:
+      - /home/aform:/workspace
+    restart: unless-stopped

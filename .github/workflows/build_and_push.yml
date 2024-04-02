@@ -1,0 +1,66 @@
+name: Build and Push Docker Image to AWS
+
+on:
+  workflow_dispatch:  # This event allows manual triggering
+  
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY_ALIAS: f3w7h7x2
+  
+# https://docs.github.com/en/actions/deployment/deploying-to-your-cloud-provider/deploying-to-amazon-elastic-container-service
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+      with:
+        registry-type: public
+
+    - name: Build Docker Image
+      run: docker build -t c9sdk .
+
+    - name: Get next version
+      uses: reecetech/version-increment@2023.10.2
+      id: version
+      with:
+        scheme: semver
+        increment: patch
+      
+    - name: Tag Version & Push Docker Image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        docker tag c9sdk $ECR_REGISTRY/$ECR_REGISTRY_ALIAS/c9sdk:${{ steps.version.outputs.version }}
+        docker push $ECR_REGISTRY/$ECR_REGISTRY_ALIAS/c9sdk:${{ steps.version.outputs.version }}
+
+    - name: Tag Latest & Push Docker Image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        docker tag c9sdk $ECR_REGISTRY/$ECR_REGISTRY_ALIAS/c9sdk:latest
+        docker push $ECR_REGISTRY/$ECR_REGISTRY_ALIAS/c9sdk:latest
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        body: |
+          Image is uploaded to [public repo](https://gallery.ecr.aws/f3w7h7x2/c9sdk) on AWS ECR.
+        tag_name: ${{ steps.version.outputs.version }}
+
