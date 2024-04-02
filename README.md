@@ -38,8 +38,8 @@ Just fill up the `C9USER` and `C9PASSWORD` with your own credentials and run `do
 
 ## How to Use for Advanced Users
 
-1. Clone the repository: `git clone https://github.com/user/repository.git`
-2. Move to the repository directory: `cd repository`
+1. Clone the repository: `git clone https://github.com/aformusatii/docker-c9sdk.git c9sdk`
+2. Move to the repository directory: `cd c9sdk`
 3. Create your own `.env` file using `.env.example` as a template.
 4. Build the docker image: `docker-compose build`
 5. Start the service: `docker-compose up`
