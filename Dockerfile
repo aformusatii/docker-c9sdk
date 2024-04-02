@@ -31,8 +31,6 @@ RUN cd /home/$user; \
     cd c9sdk; \
     PATH=$PATH:/home/$user/node-v12.18.4-linux-x64/bin bash ./scripts/install-sdk.sh
 
-# RUN ssh-keygen -f $HOME/.ssh/id_rsa -t rsa -N ''
-
 WORKDIR /home/$user/c9sdk
 
 ENV BUILD_USER=$user
