@@ -9,9 +9,9 @@ For those who wish to use this fast, we already have an image built and deployed
 
 ```yaml
 services:
-  test_ide:
+  c9sdk:
     image: public.ecr.aws/f3w7h7x2/c9sdk
-    container_name: test_c9sdk
+    container_name: c9sdk
     environment:
        C9USER:
        C9PASSWORD:
